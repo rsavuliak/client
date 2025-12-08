@@ -1,0 +1,17 @@
+version: '3'
+services:
+  client:
+    build: .
+    environment:
+      - VIRTUAL_HOST=savuliak.com
+      - VIRTUAL_PATH=/
+      - LETSENCRYPT_HOST=savuliak.com
+      - LETSENCRYPT_EMAIL=savuliak.roman@gmail.com
+    expose:
+      - "3000"
+    networks:
+      - gateway-network
+
+networks:
+  gateway-network:
+    external: true
