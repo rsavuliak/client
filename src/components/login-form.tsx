@@ -80,6 +80,7 @@ export function LoginForm({
         </Field>
         <FieldSeparator>Or continue with</FieldSeparator>
         <Field>
+          {error && <div className="error">{error}</div>}
           <GoogleLoginButton />
           <FieldDescription className="text-center">
             Don&apos;t have an account?{" "}

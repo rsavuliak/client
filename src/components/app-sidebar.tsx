@@ -52,7 +52,7 @@ const data = {
           url: "#",
         },
         {
-          title: "App 2",
+          title: "URL Shortener",
           url: "#",
         },
         {
