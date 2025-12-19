@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
@@ -21,7 +20,6 @@ import Main from "./components/Main";
 //import "./App.css";
 
 function App() {
-  const [user, setUser] = useState({ email: "" });
   return (
     <SidebarProvider>
       <AppSidebar />
