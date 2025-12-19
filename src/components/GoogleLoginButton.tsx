@@ -1,7 +1,11 @@
 import { authService } from "@/services/authService";
 import { Button } from "@/components/ui/button";
 
-export function GoogleLoginButton() {
+interface GoogleLoginButtonProps {
+  children: React.ReactNode;
+}
+
+export function GoogleLoginButton({ children }: GoogleLoginButtonProps) {
   const handleGoogleLogin = () => {
     authService.googleLogin();
   };
@@ -14,7 +18,7 @@ export function GoogleLoginButton() {
           fill="currentColor"
         />
       </svg>
-      Login with Google
+      {children}
     </Button>
   );
 }

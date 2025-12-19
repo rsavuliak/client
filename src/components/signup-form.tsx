@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { authService } from "@/services/authService";
 import { GoogleLoginButton } from "@/components/GoogleLoginButton";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/services/useAuthStore";
 
 import { cn } from "@/lib/utils";
@@ -15,28 +15,28 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
-export function LoginForm({
+export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegistration = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
     try {
-      await authService.login({ email, password });
+      await authService.register({ email, password });
       var response = await authService.me();
+      console.log("Registered user:", response);
       useAuthStore.getState().setUser(response.data);
-      console.log("Logged in user:", response);
       navigate("/");
     } catch (err: any) {
       useAuthStore.getState().clearUser();
-      setError(err.response?.data?.message || "Login failed");
+      setError(err.response?.data?.message || "Registration failed");
     } finally {
       useAuthStore.getState().finishLoading();
     }
@@ -50,9 +50,9 @@ export function LoginForm({
             <form className={cn("flex flex-col gap-6", className)} {...props}>
               <FieldGroup>
                 <div className="flex flex-col items-center gap-1 text-center">
-                  <h1 className="text-2xl font-bold">Login to your account</h1>
+                  <h1 className="text-2xl font-bold">Create your account</h1>
                   <p className="text-muted-foreground text-sm text-balance">
-                    Enter your email below to login to your account
+                    Enter your email below to create your account
                   </p>
                 </div>
                 <Field>
@@ -69,12 +69,6 @@ export function LoginForm({
                 <Field>
                   <div className="flex items-center">
                     <FieldLabel htmlFor="password">Password</FieldLabel>
-                    <a
-                      href="#"
-                      className="ml-auto text-sm underline-offset-4 hover:underline"
-                    >
-                      Forgot your password?
-                    </a>
                   </div>
                   <Input
                     id="password"
@@ -85,18 +79,18 @@ export function LoginForm({
                   />
                 </Field>
                 <Field>
-                  <Button type="submit" onClick={handleLogin}>
-                    Login
+                  <Button type="submit" onClick={handleRegistration}>
+                    Create Account
                   </Button>
                 </Field>
                 <FieldSeparator>Or continue with</FieldSeparator>
                 <Field>
                   {error && <div className="error">{error}</div>}
-                  <GoogleLoginButton>Login with Google</GoogleLoginButton>
+                  <GoogleLoginButton> Sign up with Google </GoogleLoginButton>
                   <FieldDescription className="text-center">
-                    Don&apos;t have an account?{" "}
+                    Already have an account?{" "}
                     <a href="#" className="underline underline-offset-4">
-                      Sign up
+                      Sign in
                     </a>
                   </FieldDescription>
                 </Field>
