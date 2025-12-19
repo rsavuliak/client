@@ -1,4 +1,6 @@
 "use client";
+import { useAuthStore } from "@/services/useAuthStore";
+import { authService } from "@/services/authService";
 
 import {
   BadgeCheck,
@@ -6,6 +8,7 @@ import {
   ChevronsUpDown,
   LogOut,
   Settings2,
+  Delete,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -35,6 +38,35 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+
+  const handleLogout = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      await authService.logout();
+      var response = await authService.me();
+      useAuthStore.getState().clearUser();
+      console.log("Loggout user:", response);
+    } catch (err: any) {
+      console.log("Loggout failed");
+    } finally {
+      useAuthStore.getState().finishLoading();
+    }
+  };
+
+  const handleDelete = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      await authService.deleteAccount();
+      useAuthStore.getState().clearUser();
+      console.log("User deleted successfully");
+    } catch (err: any) {
+      console.log("Delete failed");
+    } finally {
+      useAuthStore.getState().finishLoading();
+    }
+  };
 
   return (
     <SidebarMenu>
@@ -81,6 +113,12 @@ export function NavUser({
                 Settings
               </DropdownMenuItem>
             </DropdownMenuGroup>
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={handleDelete}>
+                <Delete />
+                Delete account
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
@@ -93,7 +131,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
               Log out
             </DropdownMenuItem>

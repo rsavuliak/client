@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { Bot, Command, SquareTerminal } from "lucide-react";
+import { useAuthStore } from "@/services/useAuthStore";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -14,6 +16,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Button } from "./ui/button";
 
 const data = {
   user: {
@@ -65,6 +68,19 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const navigate = useNavigate();
+
+  const location = useLocation();
+  const hideAuthButtons =
+    location.pathname === "/login" || location.pathname === "/signup";
+  console.log(location.pathname);
+  const onLogin = () => {
+    navigate("/login");
+  };
+  const onSignup = () => {
+    navigate("/signup");
+  };
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -87,7 +103,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {!hideAuthButtons && (
+          <>
+            {!useAuthStore.getState().isAuthenticated && (
+              <Button onClick={onLogin}>Login</Button>
+            )}
+            {!useAuthStore.getState().isAuthenticated && (
+              <Button onClick={onSignup}>Sign up</Button>
+            )}
+          </>
+        )}
+        {useAuthStore.getState().isAuthenticated && (
+          <NavUser user={data.user} />
+        )}
       </SidebarFooter>
     </Sidebar>
   );

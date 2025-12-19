@@ -89,7 +89,7 @@ export function SignupForm({
                   <GoogleLoginButton> Sign up with Google </GoogleLoginButton>
                   <FieldDescription className="text-center">
                     Already have an account?{" "}
-                    <a href="#" className="underline underline-offset-4">
+                    <a href="login" className="underline underline-offset-4">
                       Sign in
                     </a>
                   </FieldDescription>
