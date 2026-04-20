@@ -1,6 +1,8 @@
 "use client";
 import { useAuthStore } from "@/services/useAuthStore";
 import { authService } from "@/services/authService";
+import { useNavigate } from "react-router-dom";
+import type { AxiosError } from "axios";
 
 import {
   BadgeCheck,
@@ -38,17 +40,20 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const navigate = useNavigate();
 
   const handleLogout = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       await authService.logout();
-      var response = await authService.me();
       useAuthStore.getState().clearUser();
-      console.log("Loggout user:", response);
-    } catch (err: any) {
-      console.log("Loggout failed");
+      navigate("/login");
+    } catch (_err: unknown) {
+      const err = _err as AxiosError;
+      if (err.response?.status !== 401) {
+        useAuthStore.getState().clearUser();
+        navigate("/login");
+      }
     } finally {
       useAuthStore.getState().finishLoading();
     }
@@ -56,13 +61,12 @@ export function NavUser({
 
   const handleDelete = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       await authService.deleteAccount();
       useAuthStore.getState().clearUser();
-      console.log("User deleted successfully");
-    } catch (err: any) {
-      console.log("Delete failed");
+      navigate("/login");
+    } catch (_err: unknown) {
+      // deletion failed — stay on page
     } finally {
       useAuthStore.getState().finishLoading();
     }

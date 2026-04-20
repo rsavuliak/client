@@ -1,4 +1,5 @@
 import api from './api';
+import type { User } from '../types/User';
 
 export interface LoginRequest {
   email: string;
@@ -8,12 +9,6 @@ export interface LoginRequest {
 export interface RegisterRequest {
   email: string;
   password: string;
-}
-
-export interface User {
-  id: string;
-  email: string;
-  provider: string;
 }
 
 export const authService = {

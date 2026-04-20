@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { authService } from "@/services/authService";
 import { GoogleLoginButton } from "@/components/GoogleLoginButton";
 import { useAuthStore } from "@/services/useAuthStore";
+import type { AxiosError } from "axios";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -23,22 +24,25 @@ export function LoginForm({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsSubmitting(true);
 
     try {
       await authService.login({ email, password });
-      var response = await authService.me();
+      const response = await authService.me();
       useAuthStore.getState().setUser(response.data);
-      console.log("Logged in user:", response);
       navigate("/");
-    } catch (err: any) {
+    } catch (_err: unknown) {
+      const err = _err as AxiosError<{ message?: string }>;
       useAuthStore.getState().clearUser();
       setError(err.response?.data?.message || "Login failed");
     } finally {
       useAuthStore.getState().finishLoading();
+      setIsSubmitting(false);
     }
   };
 
@@ -85,13 +89,13 @@ export function LoginForm({
                   />
                 </Field>
                 <Field>
-                  <Button type="submit" onClick={handleLogin}>
-                    Login
+                  <Button type="submit" onClick={handleLogin} disabled={isSubmitting}>
+                    {isSubmitting ? "Logging in…" : "Login"}
                   </Button>
                 </Field>
                 <FieldSeparator>Or continue with</FieldSeparator>
                 <Field>
-                  {error && <div className="error">{error}</div>}
+                  {error && <p className="text-sm text-destructive">{error}</p>}
                   <GoogleLoginButton>Login with Google</GoogleLoginButton>
                   <FieldDescription className="text-center">
                     Don&apos;t have an account?{" "}

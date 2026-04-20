@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Bot, Command, SquareTerminal } from "lucide-react";
+import { Command, SquareTerminal } from "lucide-react";
 import { useAuthStore } from "@/services/useAuthStore";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -26,26 +26,6 @@ const data = {
   },
   navMain: [
     {
-      title: "Games",
-      url: "#",
-      icon: Bot,
-      isActive: true,
-      items: [
-        {
-          title: "Game 1",
-          url: "#",
-        },
-        {
-          title: "Game 2",
-          url: "#",
-        },
-        {
-          title: "Game 3",
-          url: "#",
-        },
-      ],
-    },
-    {
       title: "Apps",
       url: "#",
       icon: SquareTerminal,
@@ -69,17 +49,14 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const navigate = useNavigate();
-
   const location = useLocation();
+  const { isAuthenticated, user } = useAuthStore();
+
   const hideAuthButtons =
     location.pathname === "/login" || location.pathname === "/signup";
-  console.log(location.pathname);
-  const onLogin = () => {
-    navigate("/login");
-  };
-  const onSignup = () => {
-    navigate("/signup");
-  };
+
+  const onLogin = () => navigate("/login");
+  const onSignup = () => navigate("/signup");
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -103,18 +80,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        {!hideAuthButtons && (
+        {!hideAuthButtons && !isAuthenticated && (
           <>
-            {!useAuthStore.getState().isAuthenticated && (
-              <Button onClick={onLogin}>Login</Button>
-            )}
-            {!useAuthStore.getState().isAuthenticated && (
-              <Button onClick={onSignup}>Sign up</Button>
-            )}
+            <Button onClick={onLogin}>Login</Button>
+            <Button onClick={onSignup}>Sign up</Button>
           </>
         )}
-        {useAuthStore.getState().isAuthenticated && (
-          <NavUser user={data.user} />
+        {isAuthenticated && (
+          <NavUser user={{ name: user?.email ?? '', email: user?.email ?? '', avatar: '' }} />
         )}
       </SidebarFooter>
     </Sidebar>

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
@@ -15,9 +16,28 @@ import {
 import { LoginForm } from "./components/login-form";
 import { SignupForm } from "./components/signup-form";
 import Main from "./components/Main";
-//import "./App.css";
+import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
+import { authService } from "./services/authService";
+import { useAuthStore } from "./services/useAuthStore";
 
 function App() {
+  const isLoading = useAuthStore((s) => s.isLoading);
+
+  useEffect(() => {
+    authService.me()
+      .then((res) => useAuthStore.getState().setUser(res.data))
+      .catch(() => useAuthStore.getState().clearUser())
+      .finally(() => useAuthStore.getState().finishLoading());
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center text-muted-foreground text-sm">
+        Loading…
+      </div>
+    );
+  }
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -34,18 +54,14 @@ function App() {
                 <BreadcrumbItem className="hidden md:block">
                   <BreadcrumbLink href="/">Main</BreadcrumbLink>
                 </BreadcrumbItem>
-                {/* <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Login</BreadcrumbPage>
-                </BreadcrumbItem> */}
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </header>
         <Routes>
-          <Route path="/" element={<Main />} />
-          <Route path="/login" element={<LoginForm />} />
-          <Route path="/signup" element={<SignupForm />} />
+          <Route path="/" element={<ProtectedRoute><Main /></ProtectedRoute>} />
+          <Route path="/login" element={<PublicRoute><LoginForm /></PublicRoute>} />
+          <Route path="/signup" element={<PublicRoute><SignupForm /></PublicRoute>} />
         </Routes>
       </SidebarInset>
     </SidebarProvider>
