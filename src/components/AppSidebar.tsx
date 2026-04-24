@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
-  Home, ListTodo, Link2, Settings, LogOut, Menu,
+  Home, ListTodo, Link2, MessageSquare, Settings, LogOut, Menu,
   PanelLeftClose, PanelLeftOpen,
 } from "lucide-react";
 import { useAuthStore } from "@/services/useAuthStore";
@@ -23,6 +23,7 @@ const navItems = [
   { to: "/", label: "Home", icon: Home, end: true },
   { to: "/todo", label: "Todo", icon: ListTodo },
   { to: "/url-shortener", label: "URL Shortener", icon: Link2 },
+  { to: "/messenger", label: "Messenger", icon: MessageSquare },
 ];
 
 function useSidebarCollapsed() {

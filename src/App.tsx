@@ -9,6 +9,7 @@ import Main from "./components/Main";
 import SettingsPage from "./pages/SettingsPage";
 import TodoPage from "./pages/TodoPage";
 import URLShortenerPage from "./pages/URLShortenerPage";
+import MessengerPage from "./pages/MessengerPage";
 import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
 import { authService } from "./services/authService";
 import { userService } from "./services/userService";
@@ -19,6 +20,7 @@ const pageTitles: Record<string, string> = {
   "/settings": "Settings — Dibrova",
   "/todo": "Todo — Dibrova",
   "/url-shortener": "URL Shortener — Dibrova",
+  "/messenger": "Messenger — Dibrova",
   "/login": "Login — Dibrova",
   "/signup": "Sign Up — Dibrova",
   "/forgot-password": "Reset Password — Dibrova",
@@ -43,6 +45,7 @@ function AppLayout() {
             <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
             <Route path="/todo" element={<ProtectedRoute><TodoPage /></ProtectedRoute>} />
             <Route path="/url-shortener" element={<ProtectedRoute><URLShortenerPage /></ProtectedRoute>} />
+            <Route path="/messenger" element={<ProtectedRoute><MessengerPage /></ProtectedRoute>} />
             <Route path="/login" element={<PublicRoute><LoginForm /></PublicRoute>} />
             <Route path="/signup" element={<PublicRoute><SignupForm /></PublicRoute>} />
             <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordForm /></PublicRoute>} />
