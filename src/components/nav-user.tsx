@@ -2,15 +2,11 @@
 import { useAuthStore } from "@/services/useAuthStore";
 import { authService } from "@/services/authService";
 import { useNavigate } from "react-router-dom";
-import type { AxiosError } from "axios";
 
 import {
-  BadgeCheck,
-  Bell,
   ChevronsUpDown,
   LogOut,
   Settings2,
-  Delete,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -47,33 +43,14 @@ export function NavUser({
   const avatarSrc = profile?.avatarUrl ?? user.avatar;
   const initials = displayName.slice(0, 2).toUpperCase();
 
-  const handleLogout = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLogout = async () => {
     try {
       await authService.logout();
+    } catch {
+      // server-side logout failure is fine — clear locally regardless
+    } finally {
       useAuthStore.getState().clearUser();
       navigate("/login");
-    } catch (_err: unknown) {
-      const err = _err as AxiosError;
-      if (err.response?.status !== 401) {
-        useAuthStore.getState().clearUser();
-        navigate("/login");
-      }
-    } finally {
-      useAuthStore.getState().finishLoading();
-    }
-  };
-
-  const handleDelete = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await authService.deleteAccount();
-      useAuthStore.getState().clearUser();
-      navigate("/login");
-    } catch (_err: unknown) {
-      // deletion failed — stay on page
-    } finally {
-      useAuthStore.getState().finishLoading();
     }
   };
 
@@ -120,23 +97,6 @@ export function NavUser({
               <DropdownMenuItem onClick={() => navigate("/settings")}>
                 <Settings2 />
                 Settings
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuGroup>
-              <DropdownMenuItem onClick={handleDelete}>
-                <Delete />
-                Delete account
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
