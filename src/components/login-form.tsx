@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { authService } from "@/services/authService";
 import { GoogleLoginButton } from "@/components/GoogleLoginButton";
 import { useAuthStore } from "@/services/useAuthStore";
@@ -21,6 +21,8 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"form">) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const notice = (location.state as { notice?: string } | null)?.notice;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -59,6 +61,11 @@ export function LoginForm({
                     Enter your email below to login to your account
                   </p>
                 </div>
+                {notice && (
+                  <div className="rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm text-center text-muted-foreground">
+                    {notice}
+                  </div>
+                )}
                 <Field>
                   <FieldLabel htmlFor="email">Email</FieldLabel>
                   <Input
@@ -74,7 +81,7 @@ export function LoginForm({
                   <div className="flex items-center">
                     <FieldLabel htmlFor="password">Password</FieldLabel>
                     <a
-                      href="#"
+                      href="/forgot-password"
                       className="ml-auto text-sm underline-offset-4 hover:underline"
                     >
                       Forgot your password?

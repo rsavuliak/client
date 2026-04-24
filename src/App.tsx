@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/sidebar";
 import { LoginForm } from "./components/login-form";
 import { SignupForm } from "./components/signup-form";
+import { ForgotPasswordForm } from "./components/forgot-password-form";
+import { ResetPasswordForm } from "./components/reset-password-form";
 import Main from "./components/Main";
 import SettingsPage from "./pages/SettingsPage";
 import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
@@ -84,6 +86,8 @@ function AppLayout() {
           <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
           <Route path="/login" element={<PublicRoute><LoginForm /></PublicRoute>} />
           <Route path="/signup" element={<PublicRoute><SignupForm /></PublicRoute>} />
+          <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordForm /></PublicRoute>} />
+          <Route path="/reset-password" element={<PublicRoute><ResetPasswordForm /></PublicRoute>} />
         </Routes>
       </SidebarInset>
     </SidebarProvider>

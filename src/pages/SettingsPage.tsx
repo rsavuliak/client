@@ -175,6 +175,20 @@ export default function SettingsPage() {
         </div>
       </Section>
 
+      {user?.provider === "local" && (
+        <>
+          <Separator />
+          <Section title="Password" description="Change your account password.">
+            <a
+              href="/forgot-password"
+              className="self-start text-sm underline underline-offset-4 text-muted-foreground hover:text-foreground"
+            >
+              Send password reset email
+            </a>
+          </Section>
+        </>
+      )}
+
       <Separator />
 
       <Section title="Danger Zone">

@@ -24,6 +24,11 @@ export const authService = {
   
   deleteAccount: () => api.delete('/auth/delete'),
   
+  forgotPassword: (email: string) => api.post('/auth/forgot-password', { email }),
+
+  resetPassword: (token: string, newPassword: string) =>
+    api.post('/auth/reset-password', { token, newPassword }),
+
   googleLogin: () => {
     const GOOGLE_CLIENT_ID = '424121716950-g87ltpn5f3q6q4gl169frn9fp046i7rd.apps.googleusercontent.com';
     const REDIRECT_URI = 'https://auth.savuliak.com/api/v1/auth/oauth/google';
