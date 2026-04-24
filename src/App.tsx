@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
@@ -16,27 +16,21 @@ import {
 import { LoginForm } from "./components/login-form";
 import { SignupForm } from "./components/signup-form";
 import Main from "./components/Main";
+import SettingsPage from "./pages/SettingsPage";
 import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
 import { authService } from "./services/authService";
+import { userService } from "./services/userService";
 import { useAuthStore } from "./services/useAuthStore";
 
-function App() {
-  const isLoading = useAuthStore((s) => s.isLoading);
+const breadcrumbLabels: Record<string, string> = {
+  "/": "Main",
+  "/settings": "Settings",
+};
 
-  useEffect(() => {
-    authService.me()
-      .then((res) => useAuthStore.getState().setUser(res.data))
-      .catch(() => useAuthStore.getState().clearUser())
-      .finally(() => useAuthStore.getState().finishLoading());
-  }, []);
-
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center text-muted-foreground text-sm">
-        Loading…
-      </div>
-    );
-  }
+function AppLayout() {
+  const location = useLocation();
+  const label = breadcrumbLabels[location.pathname] ?? "Main";
+  const href = location.pathname === "/settings" ? "/settings" : "/";
 
   return (
     <SidebarProvider>
@@ -52,7 +46,7 @@ function App() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="/">Main</BreadcrumbLink>
+                  <BreadcrumbLink href={href}>{label}</BreadcrumbLink>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -60,12 +54,38 @@ function App() {
         </header>
         <Routes>
           <Route path="/" element={<ProtectedRoute><Main /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
           <Route path="/login" element={<PublicRoute><LoginForm /></PublicRoute>} />
           <Route path="/signup" element={<PublicRoute><SignupForm /></PublicRoute>} />
         </Routes>
       </SidebarInset>
     </SidebarProvider>
   );
+}
+
+function App() {
+  const isLoading = useAuthStore((s) => s.isLoading);
+
+  useEffect(() => {
+    authService.me()
+      .then((res) => {
+        useAuthStore.getState().setUser(res.data);
+        return userService.getMe();
+      })
+      .then((res) => useAuthStore.getState().setProfile(res.data))
+      .catch(() => useAuthStore.getState().clearUser())
+      .finally(() => useAuthStore.getState().finishLoading());
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center text-muted-foreground text-sm">
+        Loading…
+      </div>
+    );
+  }
+
+  return <AppLayout />;
 }
 
 export default App;
