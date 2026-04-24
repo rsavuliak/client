@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { TopNav } from "@/components/TopNav";
+import { AppSidebar, MobileHeader } from "@/components/AppSidebar";
 import { LoginForm } from "./components/login-form";
 import { SignupForm } from "./components/signup-form";
 import { ForgotPasswordForm } from "./components/forgot-password-form";
@@ -33,20 +33,23 @@ function AppLayout() {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <TopNav />
-      <main className="flex-1">
-        <Routes>
-          <Route path="/" element={<ProtectedRoute><Main /></ProtectedRoute>} />
-          <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-          <Route path="/todo" element={<ProtectedRoute><TodoPage /></ProtectedRoute>} />
-          <Route path="/url-shortener" element={<ProtectedRoute><URLShortenerPage /></ProtectedRoute>} />
-          <Route path="/login" element={<PublicRoute><LoginForm /></PublicRoute>} />
-          <Route path="/signup" element={<PublicRoute><SignupForm /></PublicRoute>} />
-          <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordForm /></PublicRoute>} />
-          <Route path="/reset-password" element={<PublicRoute><ResetPasswordForm /></PublicRoute>} />
-        </Routes>
-      </main>
+    <div className="flex h-screen overflow-hidden bg-background">
+      <AppSidebar />
+      <div className="flex flex-col flex-1 min-w-0 overflow-auto">
+        <MobileHeader />
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={<ProtectedRoute><Main /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+            <Route path="/todo" element={<ProtectedRoute><TodoPage /></ProtectedRoute>} />
+            <Route path="/url-shortener" element={<ProtectedRoute><URLShortenerPage /></ProtectedRoute>} />
+            <Route path="/login" element={<PublicRoute><LoginForm /></PublicRoute>} />
+            <Route path="/signup" element={<PublicRoute><SignupForm /></PublicRoute>} />
+            <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordForm /></PublicRoute>} />
+            <Route path="/reset-password" element={<PublicRoute><ResetPasswordForm /></PublicRoute>} />
+          </Routes>
+        </main>
+      </div>
     </div>
   );
 }
