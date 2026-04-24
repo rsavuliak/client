@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { MailWarning, X } from "lucide-react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
@@ -29,12 +30,25 @@ const breadcrumbLabels: Record<string, string> = {
 
 function EmailVerificationBanner() {
   const profile = useAuthStore((s) => s.profile);
-  if (!profile || profile.emailVerified) return null;
+  const [dismissed, setDismissed] = useState(false);
+
+  if (!profile || profile.emailVerified || dismissed) return null;
 
   return (
-    <div className="flex items-center gap-2 bg-amber-50 border-b border-amber-200 px-4 py-2 text-sm text-amber-800">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-      Please verify your email address. Check your inbox for a verification link.
+    <div className="flex items-center justify-between gap-3 border-b border-amber-200 bg-amber-50 px-6 py-2.5 text-amber-900">
+      <div className="flex items-center gap-2.5 text-sm">
+        <MailWarning className="size-4 shrink-0 text-amber-600" />
+        <span>
+          Please verify your email address — check your inbox for a verification link.
+        </span>
+      </div>
+      <button
+        onClick={() => setDismissed(true)}
+        className="rounded p-0.5 text-amber-600 hover:bg-amber-100 hover:text-amber-900 transition-colors"
+        aria-label="Dismiss"
+      >
+        <X className="size-3.5" />
+      </button>
     </div>
   );
 }
