@@ -1,19 +1,6 @@
-import { useEffect, useState } from "react";
-import { MailWarning, X } from "lucide-react";
+import { useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { AppSidebar } from "@/components/app-sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { TopNav } from "@/components/TopNav";
 import { LoginForm } from "./components/login-form";
 import { SignupForm } from "./components/signup-form";
 import { ForgotPasswordForm } from "./components/forgot-password-form";
@@ -27,64 +14,28 @@ import { authService } from "./services/authService";
 import { userService } from "./services/userService";
 import { useAuthStore } from "./services/useAuthStore";
 
-const breadcrumbLabels: Record<string, string> = {
-  "/": "Home",
-  "/settings": "Settings",
-  "/todo": "Todo List",
-  "/url-shortener": "URL Shortener",
+const pageTitles: Record<string, string> = {
+  "/": "Dibrova",
+  "/settings": "Settings — Dibrova",
+  "/todo": "Todo — Dibrova",
+  "/url-shortener": "URL Shortener — Dibrova",
+  "/login": "Login — Dibrova",
+  "/signup": "Sign Up — Dibrova",
+  "/forgot-password": "Reset Password — Dibrova",
+  "/reset-password": "Reset Password — Dibrova",
 };
-
-function EmailVerificationBanner() {
-  const profile = useAuthStore((s) => s.profile);
-  const [dismissed, setDismissed] = useState(false);
-
-  if (!profile || profile.emailVerified || dismissed) return null;
-
-  return (
-    <div className="flex items-center justify-between gap-3 border-b border-amber-200 bg-amber-50 px-6 py-2.5 text-amber-900">
-      <div className="flex items-center gap-2.5 text-sm">
-        <MailWarning className="size-4 shrink-0 text-amber-600" />
-        <span>
-          Please verify your email address — check your inbox for a verification link.
-        </span>
-      </div>
-      <button
-        onClick={() => setDismissed(true)}
-        className="rounded p-0.5 text-amber-600 hover:bg-amber-100 hover:text-amber-900 transition-colors"
-        aria-label="Dismiss"
-      >
-        <X className="size-3.5" />
-      </button>
-    </div>
-  );
-}
 
 function AppLayout() {
   const location = useLocation();
-  const label = breadcrumbLabels[location.pathname] ?? "Home";
-  const href = location.pathname;
+
+  useEffect(() => {
+    document.title = pageTitles[location.pathname] ?? "Dibrova";
+  }, [location.pathname]);
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator
-              orientation="vertical"
-              className="mr-2 data-[orientation=vertical]:h-4"
-            />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href={href}>{label}</BreadcrumbLink>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-        </header>
-        <EmailVerificationBanner />
+    <div className="min-h-screen flex flex-col">
+      <TopNav />
+      <main className="flex-1">
         <Routes>
           <Route path="/" element={<ProtectedRoute><Main /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
@@ -95,8 +46,8 @@ function AppLayout() {
           <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordForm /></PublicRoute>} />
           <Route path="/reset-password" element={<PublicRoute><ResetPasswordForm /></PublicRoute>} />
         </Routes>
-      </SidebarInset>
-    </SidebarProvider>
+      </main>
+    </div>
   );
 }
 

@@ -1,16 +1,26 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/services/useAuthStore";
 import { authService } from "@/services/authService";
 import { userService } from "@/services/userService";
+import { useTheme, type Theme } from "@/components/ThemeProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { PatchUserRequest, UserProfile } from "@/types/User";
 import type { AxiosError } from "axios";
-import { useNavigate } from "react-router-dom";
 
-function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
+function Section({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex flex-col gap-4">
       <div>
@@ -26,15 +36,22 @@ function ReadOnlyField({ label, value }: { label: string; value: React.ReactNode
   return (
     <div className="flex flex-col gap-1.5">
       <Label className="text-muted-foreground">{label}</Label>
-      <div className="flex h-9 items-center rounded-md border border-input bg-muted/40 px-3 text-sm text-foreground">
+      <div className="flex h-9 items-center rounded-md border border-input bg-muted/40 px-3 text-sm">
         {value}
       </div>
     </div>
   );
 }
 
+const themes: { value: Theme; label: string }[] = [
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
+  { value: "system", label: "System" },
+];
+
 export default function SettingsPage() {
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
   const profile = useAuthStore((s) => s.profile);
   const user = useAuthStore((s) => s.user);
   const setProfile = useAuthStore((s) => s.setProfile);
@@ -101,8 +118,15 @@ export default function SettingsPage() {
     }
   };
 
+  const displayNameValue = profile?.displayName ?? user?.email ?? "";
+  const initials = displayNameValue.slice(0, 2).toUpperCase();
+
   const memberSince = profile?.createdAt
-    ? new Date(profile.createdAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })
+    ? new Date(profile.createdAt).toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
     : "—";
 
   const providerLabel: Record<string, string> = {
@@ -114,11 +138,29 @@ export default function SettingsPage() {
     <div className="flex flex-col gap-8 p-6 max-w-lg">
       <div>
         <h1 className="text-xl font-semibold">Settings</h1>
-        <p className="text-sm text-muted-foreground">Manage your account and profile.</p>
+        <p className="text-sm text-muted-foreground">Manage your account and preferences.</p>
       </div>
 
+      {/* Profile */}
       <Section title="Profile" description="Your public-facing information.">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div className="flex items-center gap-4">
+            <Avatar className="h-14 w-14">
+              <AvatarImage src={avatarUrl || undefined} alt={displayNameValue} />
+              <AvatarFallback className="text-lg">{initials}</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col gap-1 flex-1">
+              <Label htmlFor="avatarUrl">Avatar URL</Label>
+              <Input
+                id="avatarUrl"
+                value={avatarUrl}
+                onChange={(e) => setAvatarUrl(e.target.value)}
+                placeholder="https://example.com/avatar.jpg"
+                maxLength={500}
+              />
+            </div>
+          </div>
+
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="displayName">Display Name</Label>
             <Input
@@ -127,17 +169,6 @@ export default function SettingsPage() {
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Your name"
               maxLength={100}
-            />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="avatarUrl">Avatar URL</Label>
-            <Input
-              id="avatarUrl"
-              value={avatarUrl}
-              onChange={(e) => setAvatarUrl(e.target.value)}
-              placeholder="https://example.com/avatar.jpg"
-              maxLength={500}
             />
           </div>
 
@@ -156,6 +187,29 @@ export default function SettingsPage() {
 
       <Separator />
 
+      {/* Appearance */}
+      <Section title="Appearance" description="Choose how Dibrova looks for you.">
+        <div className="flex flex-col gap-1.5">
+          <Label>Theme</Label>
+          <div className="flex gap-2">
+            {themes.map(({ value, label }) => (
+              <Button
+                key={value}
+                type="button"
+                variant={theme === value ? "default" : "outline"}
+                size="sm"
+                onClick={() => setTheme(value)}
+              >
+                {label}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      <Separator />
+
+      {/* Account */}
       <Section title="Account" description="Your account details. These cannot be changed here.">
         <div className="flex flex-col gap-3">
           <ReadOnlyField label="Email" value={user?.email ?? "—"} />
@@ -166,9 +220,11 @@ export default function SettingsPage() {
           <ReadOnlyField
             label="Email verified"
             value={
-              profile?.emailVerified
-                ? <span className="text-green-600 font-medium">Verified</span>
-                : <span className="text-amber-600 font-medium">Not verified</span>
+              profile?.emailVerified ? (
+                <span className="text-green-600 font-medium">Verified</span>
+              ) : (
+                <span className="text-amber-600 font-medium">Not verified</span>
+              )
             }
           />
           <ReadOnlyField label="Member since" value={memberSince} />
@@ -191,19 +247,28 @@ export default function SettingsPage() {
 
       <Separator />
 
+      {/* Danger Zone */}
       <Section title="Danger Zone">
         <div className="rounded-lg border border-destructive/30 p-4 flex flex-col gap-3">
           <div>
             <p className="text-sm font-medium">Delete account</p>
-            <p className="text-sm text-muted-foreground">Permanently delete your account and all associated data. This cannot be undone.</p>
+            <p className="text-sm text-muted-foreground">
+              Permanently delete your account and all data. This cannot be undone.
+            </p>
           </div>
           {!deleteConfirm ? (
-            <Button variant="destructive" className="self-start" onClick={() => setDeleteConfirm(true)}>
+            <Button
+              variant="destructive"
+              className="self-start"
+              onClick={() => setDeleteConfirm(true)}
+            >
               Delete account
             </Button>
           ) : (
             <div className="flex flex-col gap-2">
-              <p className="text-sm font-medium text-destructive">Are you sure? This action is irreversible.</p>
+              <p className="text-sm font-medium text-destructive">
+                Are you sure? This action is irreversible.
+              </p>
               <div className="flex gap-2">
                 <Button variant="destructive" disabled={deleting} onClick={handleDelete}>
                   {deleting ? "Deleting…" : "Yes, delete my account"}
