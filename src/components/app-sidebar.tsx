@@ -27,20 +27,17 @@ const data = {
   navMain: [
     {
       title: "Apps",
-      url: "#",
+      url: "/",
       icon: SquareTerminal,
+      isActive: true,
       items: [
         {
           title: "Todo List",
-          url: "#",
+          url: "/todo",
         },
         {
           title: "URL Shortener",
-          url: "#",
-        },
-        {
-          title: "App 3",
-          url: "#",
+          url: "/url-shortener",
         },
       ],
     },

@@ -20,14 +20,18 @@ import { ForgotPasswordForm } from "./components/forgot-password-form";
 import { ResetPasswordForm } from "./components/reset-password-form";
 import Main from "./components/Main";
 import SettingsPage from "./pages/SettingsPage";
+import TodoPage from "./pages/TodoPage";
+import URLShortenerPage from "./pages/URLShortenerPage";
 import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
 import { authService } from "./services/authService";
 import { userService } from "./services/userService";
 import { useAuthStore } from "./services/useAuthStore";
 
 const breadcrumbLabels: Record<string, string> = {
-  "/": "Main",
+  "/": "Home",
   "/settings": "Settings",
+  "/todo": "Todo List",
+  "/url-shortener": "URL Shortener",
 };
 
 function EmailVerificationBanner() {
@@ -57,8 +61,8 @@ function EmailVerificationBanner() {
 
 function AppLayout() {
   const location = useLocation();
-  const label = breadcrumbLabels[location.pathname] ?? "Main";
-  const href = location.pathname === "/settings" ? "/settings" : "/";
+  const label = breadcrumbLabels[location.pathname] ?? "Home";
+  const href = location.pathname;
 
   return (
     <SidebarProvider>
@@ -84,6 +88,8 @@ function AppLayout() {
         <Routes>
           <Route path="/" element={<ProtectedRoute><Main /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+          <Route path="/todo" element={<ProtectedRoute><TodoPage /></ProtectedRoute>} />
+          <Route path="/url-shortener" element={<ProtectedRoute><URLShortenerPage /></ProtectedRoute>} />
           <Route path="/login" element={<PublicRoute><LoginForm /></PublicRoute>} />
           <Route path="/signup" element={<PublicRoute><SignupForm /></PublicRoute>} />
           <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordForm /></PublicRoute>} />
