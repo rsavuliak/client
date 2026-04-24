@@ -135,7 +135,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="flex flex-col gap-8 p-6 max-w-lg">
+    <div className="flex flex-col gap-8 p-6 max-w-lg mx-auto w-full">
       <div>
         <h1 className="text-xl font-semibold">Settings</h1>
         <p className="text-sm text-muted-foreground">Manage your account and preferences.</p>
@@ -256,30 +256,23 @@ export default function SettingsPage() {
               Permanently delete your account and all data. This cannot be undone.
             </p>
           </div>
-          {!deleteConfirm ? (
-            <Button
-              variant="destructive"
-              className="self-start"
-              onClick={() => setDeleteConfirm(true)}
-            >
-              Delete account
-            </Button>
-          ) : (
-            <div className="flex flex-col gap-2">
-              <p className="text-sm font-medium text-destructive">
-                Are you sure? This action is irreversible.
-              </p>
-              <div className="flex gap-2">
+          <div className="flex gap-2">
+            {!deleteConfirm ? (
+              <Button variant="destructive" className="self-start" onClick={() => setDeleteConfirm(true)}>
+                Delete account
+              </Button>
+            ) : (
+              <>
                 <Button variant="destructive" disabled={deleting} onClick={handleDelete}>
-                  {deleting ? "Deleting…" : "Yes, delete my account"}
+                  {deleting ? "Deleting…" : "Confirm delete"}
                 </Button>
                 <Button variant="outline" onClick={() => setDeleteConfirm(false)}>
                   Cancel
                 </Button>
-              </div>
-              {deleteError && <p className="text-sm text-destructive">{deleteError}</p>}
-            </div>
-          )}
+              </>
+            )}
+          </div>
+          {deleteError && <p className="text-sm text-destructive">{deleteError}</p>}
         </div>
       </Section>
     </div>
