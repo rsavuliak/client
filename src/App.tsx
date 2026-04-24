@@ -27,6 +27,18 @@ const breadcrumbLabels: Record<string, string> = {
   "/settings": "Settings",
 };
 
+function EmailVerificationBanner() {
+  const profile = useAuthStore((s) => s.profile);
+  if (!profile || profile.emailVerified) return null;
+
+  return (
+    <div className="flex items-center gap-2 bg-amber-50 border-b border-amber-200 px-4 py-2 text-sm text-amber-800">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+      Please verify your email address. Check your inbox for a verification link.
+    </div>
+  );
+}
+
 function AppLayout() {
   const location = useLocation();
   const label = breadcrumbLabels[location.pathname] ?? "Main";
@@ -52,6 +64,7 @@ function AppLayout() {
             </Breadcrumb>
           </div>
         </header>
+        <EmailVerificationBanner />
         <Routes>
           <Route path="/" element={<ProtectedRoute><Main /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />

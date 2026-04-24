@@ -17,13 +17,17 @@ No test suite is configured.
 
 React 19 SPA with TypeScript, built with Vite and styled using Tailwind CSS 4 + shadcn/ui (new-york style, slate base color).
 
-**Routing** — React Router DOM 7. Routes are declared in `src/App.tsx`; `BrowserRouter` lives in `src/main.tsx`. Current routes: `/` (Main), `/login`, `/signup`.
+**Routing** — React Router DOM 7. Routes are declared in `src/App.tsx`; `BrowserRouter` lives in `src/main.tsx`. Current routes: `/` (Main), `/login`, `/signup`, `/settings`.
 
-**State** — Zustand store at `src/services/useAuthStore.ts` holds auth state (`user`, `isAuthenticated`, `isLoading`) with `setUser`, `clearUser`, `finishLoading` actions.
+**State** — Zustand store at `src/services/useAuthStore.ts` holds auth state (`user`, `profile`, `isAuthenticated`, `isLoading`) with `setUser`, `clearUser`, `finishLoading`, `setProfile`, `clearProfile` actions. `profile` is the `UserProfile` from the User Service (display name, avatar, settings, etc.).
 
-**API layer** — Axios client configured in `src/services/api.ts` pointing to `https://auth.savuliak.com/api/v1` with `withCredentials: true`. All auth calls (login, register, logout, refresh, me, Google OAuth) live in `src/services/authService.ts`. To develop against a local backend, swap the base URL to the commented-out `http://localhost:8080/api/v1`.
+**API layer** — Two Axios clients:
+- `src/services/api.ts` → Auth Service at `https://auth.savuliak.com/api/v1`. All auth calls (login, register, logout, refresh, me, Google OAuth) live in `src/services/authService.ts`. Local dev: `http://localhost:8080/api/v1`.
+- `src/services/userApi.ts` → User Service at `https://users.savuliak.com/api/v1/users`. Profile calls (`GET /me`, `PATCH /me`) live in `src/services/userService.ts`. Local dev: `http://localhost:8081/api/v1/users`.
 
-**Layout** — `src/App.tsx` uses a `SidebarProvider`/`SidebarInset` shell. `AppSidebar` reads auth state to conditionally show login/logout controls. The main content area renders the route outlet.
+Both clients use `withCredentials: true` — the shared `token` cookie from the Auth Service authenticates both.
+
+**Layout** — `src/App.tsx` uses a `SidebarProvider`/`SidebarInset` shell. `AppSidebar` reads auth state to conditionally show login/logout controls. Breadcrumb is route-aware. The main content area renders the route outlet.
 
 **Path alias** — `@/*` maps to `src/*` (configured in both `vite.config.ts` and `tsconfig.app.json`).
 
